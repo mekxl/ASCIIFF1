@@ -57,20 +57,21 @@
     }
 
     function desenharJogo() {
-      let tela = "";
+  let tela = "";
 
-      for (let y = 0; y < altura; y++) {
-        let linha = pista[y].slice();
+  for (let y = altura - 1; y >= 0; y--) {
+    let linha = pista[y].slice();
 
-        if (y === altura - 2) {
-          linha[playerX] = playerCar;
-        }
-
-        tela += linha.join("") + "\n";
-      }
-
-      document.getElementById("game").textContent = tela;
+    if (y === altura - 2) {
+      linha[playerX] = playerCar;
     }
+
+    tela += linha.join("") + "\n";
+  }
+
+  document.getElementById("game").textContent = tela;
+}
+
 
     function atualizarPista() {
       pista.shift(); // remove topo
