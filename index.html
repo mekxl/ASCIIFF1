@@ -20,7 +20,7 @@
 </head>
 <body>
 
-  <h1>ASCII F1 - Use WASD ou as setas</h1>
+  <h1>ASCII F1 Grand Prix - Use WASD ou as setas</h1>
   <div id="game"></div>
 
   <script>
@@ -33,6 +33,15 @@
 
     let offsetPista = 0;    // novo: deslocamento lateral da pista
     let direcao = 1;        // novo: direção do deslocamento
+
+    let oponentes = [
+  { x: 10, y: altura - 1 },
+  { x: 20, y: altura - 5 }
+];
+
+const maxOponentes = oponentes.length;
+const oponenteCar = "^";
+
 
     function criarLinhaComDeslocamento() {
       const deslocamento = offsetPista;
@@ -60,12 +69,27 @@
 
 function desenharJogo() {
   let tela = "";
-
   for (let y = altura - 1; y >= 0; y--) {
     let linha = pista[y].slice();
 
+    // desenhar oponentes
+    for (let i = 0; i < maxOponentes; i++) {
+      if (oponentes[i].y === y) {
+        linha[oponentes[i].x] = "%c" + oponenteCar;
+      }
+    }
+
+    // desenhar jogador
     if (y === linhaCarro) {
-      linha[playerX] = playerCar;
+      // checar colisão
+      for (let i = 0; i < maxOponentes; i++) {
+        if (oponentes[i].y === y && oponentes[i].x === playerX) {
+          linha[playerX] = "X"; // impacto
+          fimDeJogo("DNF - Você colidiu!");
+        } else {
+          linha[playerX] = playerCar;
+        }
+      }
     }
 
     tela += linha.join("") + "\n";
@@ -73,6 +97,7 @@ function desenharJogo() {
 
   document.getElementById("game").textContent = tela;
 }
+
 
 
 
@@ -95,18 +120,45 @@ function desenharJogo() {
       // Inverte a direção se sair dos limites
       if (offsetPista > 5 || offsetPista < -5) {
         direcao *= -1;
+        function moverOponentes() {
+  for (let i = 0; i < maxOponentes; i++) {
+    let direcao = Math.floor(Math.random() * 3) - 1; // -1, 0 ou 1
+    let novoX = oponentes[i].x + direcao;
+
+    // evitar sair da pista
+    if (novoX > 0 && novoX < largura - 1) {
+      oponentes[i].x = novoX;
+    }
+
+    // mover oponente pra cima (sentido contrário ao da pista)
+    oponentes[i].y -= 1;
+
+    // reaparecer se sair da tela
+    if (oponentes[i].y < 0) {
+      oponentes[i].y = altura - 1;
+      oponentes[i].x = Math.floor(Math.random() * (largura - 2)) + 1;
+    }
+  }
+}
+
       }
 
       atualizarPista();
       desenharJogo();
     }
 
-    setInterval(loopJogo, 150); // velocidade da pista
+    const jogoInterval = setInterval(loopJogo, 150);
+
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft" || e.key === "a") moverPlayer(-1);
       if (e.key === "ArrowRight" || e.key === "d") moverPlayer(1);
     });
+    function fimDeJogo(mensagem) {
+  clearInterval(jogoInterval);
+  alert(mensagem);
+}
+
 
     iniciarPista();
     desenharJogo();
