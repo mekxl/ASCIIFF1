@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>ASCII F1</title>
+  <style>
+    body {
+      background: black;
+      color: lime;
+      font-family: monospace;
+      font-size: 16px;
+      text-align: center;
+      overflow: hidden;
+    }
+    #game {
+      white-space: pre;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>ASCII F1 - Use WASD ou as setas</h1>
+  <div id="game"></div>
+
+  <script>
+    const largura = 30;
+    const altura = 20;
+
+    let pista = [];
+    let playerX = Math.floor(largura / 2);
+    const playerCar = "╦╩";
+
+    function criarLinhaVazia() {
+      let linha = Array(largura).fill(" ");
+      linha[0] = "|";
+      linha[largura - 1] = "|";
+      return linha;
+    }
+
+    function iniciarPista() {
+      pista = [];
+      for (let i = 0; i < altura; i++) {
+        pista.push(criarLinhaVazia());
+      }
+    }
+
+    function desenharJogo() {
+      let tela = "";
+
+      for (let y = 0; y < altura; y++) {
+        let linha = pista[y].slice();
+
+        if (y === altura - 2) {
+          linha[playerX] = "╦";
+          linha[playerX + 1] = "╩";
+        }
+
+        tela += linha.join("") + "\n";
+      }
+
+      document.getElementById("game").textContent = tela;
+    }
+
+    function atualizarPista() {
+      pista.shift(); // remove topo
+      pista.push(criarLinhaVazia()); // adiciona nova linha no fundo
+    }
+
+    function moverPlayer(dx) {
+      const novoX = playerX + dx;
+      if (novoX > 0 && novoX < largura - 2) {
+        playerX = novoX;
+      }
+    }
+
+    function loopJogo() {
+      atualizarPista();
+      desenharJogo();
+    }
+
+    setInterval(loopJogo, 150); // velocidade da pista
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" || e.key === "a") moverPlayer(-1);
+      if (e.key === "ArrowRight" || e.key === "d") moverPlayer(1);
+    });
+
+    iniciarPista();
+    desenharJogo();
+  </script>
+
+</body>
+</html>
