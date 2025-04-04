@@ -56,13 +56,15 @@
       }
     }
 
-    function desenharJogo() {
+    const linhaCarro = 5; // distância do carro em relação ao fundo
+
+function desenharJogo() {
   let tela = "";
 
   for (let y = altura - 1; y >= 0; y--) {
     let linha = pista[y].slice();
 
-    if (y === altura - 2) {
+    if (y === linhaCarro) {
       linha[playerX] = playerCar;
     }
 
@@ -71,6 +73,7 @@
 
   document.getElementById("game").textContent = tela;
 }
+
 
 
     function atualizarPista() {
