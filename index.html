@@ -29,19 +29,30 @@
 
     let pista = [];
     let playerX = Math.floor(largura / 2);
-    const playerCar = "╦╩";
+    const playerCar = "^";
 
-    function criarLinhaVazia() {
+    let offsetPista = 0;    // novo: deslocamento lateral da pista
+    let direcao = 1;        // novo: direção do deslocamento
+
+    function criarLinhaComDeslocamento() {
+      const deslocamento = offsetPista;
       let linha = Array(largura).fill(" ");
-      linha[0] = "|";
-      linha[largura - 1] = "|";
+      
+      const esquerda = Math.max(0, deslocamento);
+      const direita = Math.min(largura - 1, largura - 1 + deslocamento);
+
+      if (esquerda < largura && direita > 0) {
+        linha[esquerda] = "|";
+        linha[direita] = "|";
+      }
+
       return linha;
     }
 
     function iniciarPista() {
       pista = [];
       for (let i = 0; i < altura; i++) {
-        pista.push(criarLinhaVazia());
+        pista.push(criarLinhaComDeslocamento());
       }
     }
 
@@ -52,8 +63,7 @@
         let linha = pista[y].slice();
 
         if (y === altura - 2) {
-          linha[playerX] = "╦";
-          linha[playerX + 1] = "╩";
+          linha[playerX] = playerCar;
         }
 
         tela += linha.join("") + "\n";
@@ -64,17 +74,25 @@
 
     function atualizarPista() {
       pista.shift(); // remove topo
-      pista.push(criarLinhaVazia()); // adiciona nova linha no fundo
+      pista.push(criarLinhaComDeslocamento()); // adiciona nova linha no fundo
     }
 
     function moverPlayer(dx) {
       const novoX = playerX + dx;
-      if (novoX > 0 && novoX < largura - 2) {
+      if (novoX > 0 && novoX < largura - 1) {
         playerX = novoX;
       }
     }
 
     function loopJogo() {
+      // Atualiza o deslocamento lateral da pista
+      offsetPista += direcao;
+
+      // Inverte a direção se sair dos limites
+      if (offsetPista > 5 || offsetPista < -5) {
+        direcao *= -1;
+      }
+
       atualizarPista();
       desenharJogo();
     }
